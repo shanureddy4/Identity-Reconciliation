@@ -1,5 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import path = require('path');
+import   {aws_lambda_nodejs as lambdaNode} from "aws-cdk-lib";
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class IdentityReconciliationStack extends cdk.Stack {
@@ -12,5 +14,16 @@ export class IdentityReconciliationStack extends cdk.Stack {
     // const queue = new sqs.Queue(this, 'IdentityReconciliationQueue', {
     //   visibilityTimeout: cdk.Duration.seconds(300)
     // });
+    const userLambda = new lambdaNode.NodejsFunction(
+      this,
+      'user-lambda',
+      {
+        entry: path.join(__dirname, '../functions/user/user-handler.ts'),
+        handler: 'handler',
+        environment: {
+          FUNCTION_NAME: 'user handler'
+        }
+      }
+    );
   }
 }
