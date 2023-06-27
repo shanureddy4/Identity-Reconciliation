@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import path = require('path');
 import   {aws_lambda_nodejs as lambdaNode} from "aws-cdk-lib";
+import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class IdentityReconciliationStack extends cdk.Stack {
@@ -25,5 +26,17 @@ export class IdentityReconciliationStack extends cdk.Stack {
         }
       }
     );
+
+      // Create an API Gateway REST API with a URL that triggers the Lambda function
+const api = new apigateway.RestApi(this, 'API');
+const integration = new apigateway.LambdaIntegration(userLambda);
+api.root
+        .addResource('user')
+        .addMethod('POST', integration);
+
+// Output the URL for the API Gateway endpoint
+new cdk.CfnOutput(this, 'URL', {
+  value: api.url,
+});
   }
 }
