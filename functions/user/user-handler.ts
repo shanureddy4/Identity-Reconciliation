@@ -7,11 +7,12 @@ exports.handler = async function (event: any) {
 
     console.log("event log",event);
     // parse the event body to JSON format
-    const identityData:IdentityData = JSON.parse(event.body);
-    if(identityData && !identityData.email && !identityData.phoneNumber)
-    {
-      throw new Error("please provide atleast email or phone number")
+    const identityData: IdentityData = JSON.parse(event.body);
+
+    if (identityData == null || (!identityData.email && !identityData.phoneNumber)) {
+        throw new Error("Please provide at least email or phone number");
     }
+
 
     // assign environment variables
     await SecretManager.setDbConfig()
