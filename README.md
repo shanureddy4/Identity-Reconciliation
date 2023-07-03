@@ -1,14 +1,23 @@
-# Welcome to your CDK TypeScript project
+# Identity-Reconciliation
 
-This is a blank project for CDK development with TypeScript.
+### Used Technologies:  
+2. AWS resources -> lambda, secret manager, rds (MySQL) and VPC  
+3. AWS CDK -> to deploy aws stack  
+4. Typescript  
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+### Brief :  
+1. Used AWS to deploy **Lambda** and **MySQL**. Created **VPC** with public, private, and isolated (aws cdk terms). Isolated MySql DB so that only lambda will communicate to it. **Secret Manager** is used to store the database credentials.
+2. Typescript is used to deploy the infrastructure.
 
-## Useful commands
+### exposed URL: https://z1aeq9invc.execute-api.us-east-1.amazonaws.com/prod/identify  
+#### Typical Request:  
 
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
-* `cdk deploy`      deploy this stack to your default AWS account/region
-* `cdk diff`        compare deployed stack with current state
-* `cdk synth`       emits the synthesized CloudFormation template
+![image](https://github.com/shanureddy4/Identity-Reconciliation/assets/40113605/9e0767f1-3588-439e-9c09-009a97210b94)  
+
+#### video
+https://github.com/shanureddy4/Identity-Reconciliation/assets/40113605/54178b5c-adc8-4e78-8aaf-c40539dd8c26
+
+
+
+
+
