@@ -73,7 +73,7 @@ export class IdentityReconciliationStack extends cdk.Stack {
       'user-lambda',
       {
         securityGroups: [lambdaSg],
-       // vpc: vpc,
+        vpc: vpc,
         entry: path.join(__dirname, '../functions/user/user-handler.ts'),
         handler: 'handler',
         environment: {
