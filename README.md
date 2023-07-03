@@ -1,12 +1,16 @@
 # Identity-Reconciliation
 
 ### Used Technologies:  
-2. AWS resources -> lambda, secret manager, rds (MySQL) and VPC  
-3. AWS CDK -> to deploy aws stack  
-4. Typescript  
+1. AWS resources
+    - Lambda
+    - Secret Manager
+    - RDS (MySQL)
+    - VPC  
+2. AWS CDK - to deploy aws stack  
+3. Typescript  
 
 ### Brief :  
-1. Used AWS to deploy **Lambda** and **MySQL**. Created **VPC** with public, private, and isolated (aws cdk terms). Isolated MySql DB so that only lambda will communicate to it. **Secret Manager** is used to store the database credentials.
+1. Used AWS as a cloud service for **Faas(Lambda)** and for **Database(RDS)**. Created **VPC** with public, private, and isolated (aws cdk terms) subnets. Isolated MySql DB so that only lambda will communicate to it. **Secret Manager** is used to store the database credentials.
 2. Typescript is used to deploy the infrastructure.
 
 ### exposed URL: https://z1aeq9invc.execute-api.us-east-1.amazonaws.com/prod/identify  
