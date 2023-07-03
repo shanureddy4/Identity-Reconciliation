@@ -40,42 +40,35 @@ private async harvest(contactData: DbModel[], identity: IdentityData) {
   try{
   //if no records found create one
   if (contactData.length === 0) {
+
     const createContact = await this.userDao.createContact("primary", identity);
     contactData.push(createContact);
   } 
   else{
     const primaryOne = contactData[0];
+let emailCheck = false;
+let phoneCheck = false;
+let exactMatch = false;
 
-    //checks to create a new contact if it's not there
-    let emailCheck = false;
-    let phoneCheck = false;
-    let exactMatch = false;
-   
+for (let i = 0; i < contactData.length; i++) {
+  const data = contactData[i];
 
-    contactData.forEach(async (data:DbModel,index:number)=>{
+  exactMatch = data.email === identity.email && data.phoneNumber === identity.phoneNumber;
+  emailCheck = !exactMatch && !emailCheck && data.email === identity.email;
+  phoneCheck = !exactMatch && !phoneCheck && data.phoneNumber === identity.phoneNumber;
 
-      //checks if it is an exact match. so that won't create a new contact
-      exactMatch = data.email===identity.email && data.phoneNumber === identity.phoneNumber;
+  if (i > 0 && data.linkPrecedence !== 'secondary' && data.linkedId !== primaryOne.id) {
+    data.linkPrecedence = 'secondary';
+    data.linkedId = primaryOne.id;
+    await this.userDao.updateContact(data.id, data.linkedId);
+  }
+}
 
-      //checks exactMatch so that short circuit before validating further.
-      emailCheck = !exactMatch && !emailCheck && data.email === identity.email;
-      phoneCheck = !exactMatch && !phoneCheck && data.phoneNumber === identity.phoneNumber;
+if (!exactMatch && !(emailCheck && phoneCheck)) {
+  const createContact = await this.userDao.createContact("secondary", identity, primaryOne.id);
+  contactData.push(createContact);
+}
 
-      //the data is fetched in a way where first record is always primary so updating rest if there is any
-      if(index>0 && data.linkPrecedence !== 'secondary' && data.linkedId !== primaryOne.id){
-        data.linkPrecedence = 'secondary';
-        data.linkedId = primaryOne.id;
-        //for better code readability updating both linkPrecedence even for secondary. 
-        //if data is huge we can wrap then in another if condtion and make the changes.
-        await this.userDao.updateContact(data.id,data.linkedId)
-      }
-
-   })
-   if(!exactMatch && !(emailCheck && phoneCheck)){
-    //this will create a new contact even any one of email or phoneNumber is null or empty string.
-    const createContact = await this.userDao.createContact("secondary", identity , primaryOne.id);
-    contactData.push(createContact);
-   }
 
   }
 
@@ -104,7 +97,7 @@ function mapcontacts(dbData: DbModel[]): ContactData {
       acc.phoneNumbers.push(data.phoneNumber); // Add unique phone numbers to the array
     }
 
-    if (data.linkPrecedence !== "primary") {
+    if (data.linkPrecedence !== "primary" && !acc.secondaryContactIds.includes(data.id)) {
       acc.secondaryContactIds.push(data.id);
     }
 
