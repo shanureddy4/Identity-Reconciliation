@@ -13,20 +13,18 @@ export class UserDao implements IUserDao {
    */
   async getContact(identity: IdentityData): Promise<DbModel[]> {
     try {
- const query = `
-  SELECT *
-  FROM ${Configs.DB_NAME}.UserContacts
-  WHERE (phoneNumber = ? OR email = ?)
-     OR linkedId IN (
-        SELECT linkedId
-        FROM ${Configs.DB_NAME}.UserContacts
-        WHERE phoneNumber = ? OR email = ?
-     );
-`;
 
-const results = await executeQuery(query, [identity.phoneNumber, identity.email, identity.phoneNumber, identity.email]) as DbModel[];
+        const getIdsQuery = `SELECT id, linkedId FROM ${Configs.DB_NAME}.UserContacts WHERE (phoneNumber = ? OR email = ?);`;
+        const result = await executeQuery(getIdsQuery, [identity.phoneNumber, identity.email]) as {id: number, linkedId: number}[];
 
-      
+        const allIdsAndLinkedIds = result.map(({ id, linkedId }) => [id, linkedId]).flat();
+        if (allIdsAndLinkedIds.length === 0) {
+          console.log('No records found.');
+          return [];
+        } 
+        const query = `SELECT * FROM ${Configs.DB_NAME}.UserContacts WHERE linkedId IN (?) OR id IN (?) ORDER BY createdAt ASC;`;
+        const results = await executeQuery(query, [allIdsAndLinkedIds, allIdsAndLinkedIds]) as DbModel[];
+
       console.log('Query results:', results);
       return results;
     } catch (error) {
